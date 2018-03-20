@@ -10,9 +10,10 @@ import pandas
 #                                                         'duration', 'key', 'mode', 'loudness', "artist_hotttnesss", 'time_signature', 'start_of_fade_out'])
 # converter.convert_directory(path)
 
-# column_names = ['artist_name', 'title', 'release', 'tempo', 'duration', 'key', 'mode', 'loudness', "artist_hotttnesss"]
-# data_set = pandas.read_csv("test_songs2.csv", header=None, names=column_names)
-# print(data_set.shape)
+column_names = ['artist_name', 'title', 'release',  'year', 'tempo', 'duration', 'key', 'mode', 'loudness',
+                 "artist_hotttnesss", 'time_signature', 'start_of_fade_out']
+data_set = pandas.read_csv("test_songs2.csv", names=column_names)
+print(data_set)
 
 
 
