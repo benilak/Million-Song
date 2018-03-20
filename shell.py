@@ -3,6 +3,7 @@ import sqlite3
 import os
 from mmsongsdbtocsvconverter import MMSongsDbToCsvConverter
 import pandas
+from sklearn.cluster import KMeans
 
 
 # path = os.path.abspath('millionsongsubset_full\millionsongsubset_full\MillionSongSubset\data')
@@ -12,9 +13,15 @@ import pandas
 
 column_names = ['artist_name', 'title', 'release',  'year', 'tempo', 'duration', 'key', 'mode', 'loudness',
                  "artist_hotttnesss", 'time_signature', 'start_of_fade_out']
-data_set = pandas.read_csv("test_songs2.csv", names=column_names)
+data_set = pandas.read_csv("test_songs2.csv")
+data_set = data_set.drop(['artist_name', 'title', 'release', 'year', 'mode'], axis=1)
 print(data_set)
 
+
+kmeans = KMeans(n_clusters=12)
+
+kmeans.fit(data_set.as_matrix())
+print(kmeans.cluster_centers_)
 
 
 
