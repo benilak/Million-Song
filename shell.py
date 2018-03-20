@@ -2,10 +2,22 @@ import hdf5_getters
 import sqlite3
 import os
 from mmsongsdbtocsvconverter import MMSongsDbToCsvConverter
+import pandas
 
-path = os.path.abspath('millionsongsubset_full\MillionSongSubset\data\A\A')
-converter = MMSongsDbToCsvConverter('test_songs.csv', ['artist_name', 'title', 'tempo'])
-converter.convert_directory(path)
+
+# path = os.path.abspath('millionsongsubset_full\millionsongsubset_full\MillionSongSubset\data')
+# converter = MMSongsDbToCsvConverter('test_songs2.csv', ['artist_name', 'title', 'release',  'year', 'tempo',
+#                                                         'duration', 'key', 'mode', 'loudness', "artist_hotttnesss", 'time_signature', 'start_of_fade_out'])
+# converter.convert_directory(path)
+
+# column_names = ['artist_name', 'title', 'release', 'tempo', 'duration', 'key', 'mode', 'loudness', "artist_hotttnesss"]
+# data_set = pandas.read_csv("test_songs2.csv", header=None, names=column_names)
+# print(data_set.shape)
+
+
+
+
+
 # open file so we can extract info
 # h5 = hdf5_getters.open_h5_file_read(os.path.abspath("example_song_files/example3.h5"))
 #

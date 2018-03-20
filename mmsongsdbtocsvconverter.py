@@ -67,7 +67,7 @@ class MMSongsDbToCsvConverter(object):
         for root, dirnames, filenames in os.walk(directory):
             filenames = list(filter(lambda filename: filename.endswith('.h5'),
                                filenames))
-            logger.info("_convert_directory() for dir %s with %s h5 files...",
+            print("_convert_directory() for dir %s with %s h5 files...",
                         root,
                         len(list(filenames)))
             for filename in sorted(list(filenames)):
@@ -75,8 +75,8 @@ class MMSongsDbToCsvConverter(object):
             dirnames = [os.path.join(root, dirname) for dirname in dirnames]
             dirnames = list(filter(lambda dirname: dirname not in self.dirnames_seen,
                               dirnames))
-            for dirname in sorted(list(dirnames)):
-                self._convert_directory(dirname)
+
+
 
     def convert_directory(self, directory):
         """External function
@@ -93,4 +93,4 @@ class MMSongsDbToCsvConverter(object):
         with open(self.csv_filename, 'w') as self.fp:
             self.writer = csv.writer(self.fp)
             self._convert_directory(directory)
-        logger.info("%s dirnames seen", len(self.dirnames_seen))
+        # print("%s dirnames seen", len(self.dirnames_seen))
