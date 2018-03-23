@@ -159,10 +159,15 @@ def get_artist_terms(h5,songidx=0):
     file. By default, return the array for the first song in the h5 file.
     To get a regular numpy ndarray, cast the result to: numpy.array( )
     """
-    if h5.root.metadata.songs.nrows == songidx + 1:
-        return h5.root.metadata.artist_terms[h5.root.metadata.songs.cols.idx_artist_terms[songidx]:]
-    return h5.root.metadata.artist_terms[h5.root.metadata.songs.cols.idx_artist_terms[songidx]:
-                                            h5.root.metadata.songs.cols.idx_artist_terms[songidx+1]]
+    try:
+        if h5.root.metadata.songs.nrows == songidx + 1:
+            return h5.root.metadata.artist_terms[0]
+        if h5.root.metadata.artist_terms[0]:
+            return h5.root.metadata.artist_terms[0]
+    except IndexError:
+        return "?"
+    # return h5.root.metadata.artist_terms[h5.root.metadata.songs.cols.idx_artist_terms[songidx]:
+    #                                         h5.root.metadata.songs.cols.idx_artist_terms[songidx+1]]
 
 def get_artist_terms_freq(h5,songidx=0):
     """
