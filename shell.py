@@ -11,43 +11,43 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-path = os.path.abspath('C:\\Users\Landon\Desktop\millionsongsubset_full\millionsongsubset_full\MillionSongSubset\data')
-converter = MMSongsDbToCsvConverter('test_songsFinal.csv', ['artist_name', 'title', 'release',  'year', 'tempo',
-                                                        'duration', 'key', 'mode', 'loudness', "artist_hotttnesss",
-                                                        'time_signature', 'start_of_fade_out', 'end_of_fade_in', 'artist_terms'])
-converter.convert_directory(path)
+# path = os.path.abspath('C:\\Users\Landon\Desktop\millionsongsubset_full\millionsongsubset_full\MillionSongSubset\data')
+# converter = MMSongsDbToCsvConverter('test_songsFinal.csv', ['artist_name', 'title', 'release',  'year', 'tempo',
+#                                                         'duration', 'key', 'mode', 'loudness', "artist_hotttnesss",
+#                                                         'time_signature', 'start_of_fade_out', 'end_of_fade_in', 'artist_terms'])
+# converter.convert_directory(path)
 
-# column_names = ['artist_name', 'title', 'release',  'year', 'tempo', 'duration', 'key', 'mode', 'loudness',
-#                  "artist_hotttnesss", 'time_signature', 'start_of_fade_out']
-# data_set = pandas.read_csv("test_songs2.csv")
-# artist_names = data_set["artist_name"]
-# print(artist_names[:10])
-# data_set = data_set.drop(['artist_name', 'title', 'release', 'year', 'mode'], axis=1)
-#
-# # print(data_set)
-# data_array = data_set.as_matrix()
-# # print("before scaling:")
-# # print(data_array[:10, ])
-# scaler = preprocessing.StandardScaler().fit(data_array)
-# data_array = scaler.transform(data_array)
-# # print("after scaling:")
-# # print(data_array[:10, ])
-#
-# cluster = linkage(data_array[:5000, ], 'complete')
-# # calculate full dendrogram
-# plt.figure()
-# plt.title('Hierarchical Clustering Dendrogram')
-# plt.xlabel('sample index')
-# plt.ylabel('distance')
-# dendrogram(
-#     cluster,
-#     orientation="right",
-#     p=9,
-#     truncate_mode="level",
-#     leaf_font_size=5.,  # font size for the x axis labels
-#     labels=artist_names[:5000].iloc()
-# )
-# plt.show()
+column_names = ['artist_name', 'title', 'release',  'year', 'tempo', 'duration', 'key', 'mode', 'loudness',
+                 "artist_hotttnesss", 'time_signature', 'start_of_fade_out']
+data_set = pandas.read_csv("test_songs2.csv")
+artist_names = data_set["artist_name"]
+print(artist_names[:10])
+data_set = data_set.drop(['artist_name', 'title', 'release', 'year', 'mode'], axis=1)
+
+# print(data_set)
+data_array = data_set.as_matrix()
+# print("before scaling:")
+# print(data_array[:10, ])
+scaler = preprocessing.StandardScaler().fit(data_array)
+data_array = scaler.transform(data_array)
+# print("after scaling:")
+# print(data_array[:10, ])
+
+cluster = linkage(data_array[:5000, ], 'complete')
+# calculate full dendrogram
+plt.figure()
+plt.title('Hierarchical Clustering Dendrogram')
+plt.xlabel('sample index')
+plt.ylabel('distance')
+dendrogram(
+    cluster,
+    orientation="right",
+    p=9,
+    truncate_mode="level",
+    leaf_font_size=5.,  # font size for the x axis labels
+    labels=artist_names[:5000].iloc()
+)
+plt.show()
 
 
 # kmeans = KMeans(n_clusters=12)
