@@ -46,21 +46,24 @@ data_combined = np.column_stack((data_array, artist_terms))
 print(data_combined[:3])
 
 # cluster using single linkage
-cluster = linkage(data_combined[:2000], 'single')
+cluster = linkage(data_combined, 'single')
 # # calculate full dendrogram
-plt.figure()
-plt.title('Hierarchical Clustering Dendrogram')
-plt.xlabel('sample index')
-plt.ylabel('distance')
+# plt.figure()
+# plt.title('Hierarchical Clustering Dendrogram')
+# plt.xlabel('sample index')
+# plt.ylabel('distance')
 clustered_songs = dendrogram(
     cluster,
     orientation="right",
-    truncate_mode="lastp",
+    truncate_mode="none",
     leaf_font_size=5.,  # font size for the x axis labels
-    labels=labels_list[:2000],
+    labels=data_labels.iloc(),
     get_leaves=True
 )
-plt.show()
-# artist_list = list(clustered_songs['ivl'])
-# for song in artist_list[0:5]:
-#     print(song.name)
+# plt.show()
+artist_list = list(clustered_songs['ivl'])
+file = open('cluster_song_ids.txt', 'w')
+print("writing song ids to file")
+for song in artist_list:
+     file.write(str(song.name) + '\n')
+file.close()

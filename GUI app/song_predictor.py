@@ -15,8 +15,10 @@ class SongPredictor():
     """The driver class of the program"""
     def __init__(self):
         """default constructor"""
+        self.clustered_ids = None
         self.main_menu = Main_Menu()
         self.create_db_file()
+        self.load_cluster_ids()
 
     def create_db_file(self):
         conn = sqlite3.connect('songs_subset.db')
@@ -46,6 +48,34 @@ class SongPredictor():
 
         conn.close()
 
+    def load_cluster_ids(self):
+        with open("../cluster_song_ids.txt") as f:
+            self.clustered_ids = f.readlines()
+        self.clustered_ids = [x.strip() for x in self.clustered_ids]
+        print(self.clustered_ids[:5])
+
+    def get_song_id(self, song, artist):
+        conn = sqlite3.connect('songs_subset.db')
+        cursor = conn.cursor()
+        cursor.execute("""SELECT "index" from songs where artist_name = ? and title = ?""", (artist.strip(), song.strip(), ))
+        id = cursor.fetchone()
+        print("id is = " + str(id[0]))
+        conn.close()
+        return id[0]
+
+    def get_recommendations(self, song, artist):
+        print(song + " " + artist)
+        song_id = self.get_song_id(song, artist)
+        cluster_index = self.clustered_ids.index(str(song_id))
+        print(cluster_index)
+        # get 6 closest songs to selected song
+        rec_song_ids = self.clustered_ids[cluster_index - 3:cluster_index] + self.clustered_ids[cluster_index + 1: cluster_index + 4]
+        # convert string ids to ints
+        results = [int(i) for i in rec_song_ids]
+        self.main_menu.populate_recommendation_page(results)
+
+
+
 class Main_Menu(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -63,7 +93,7 @@ class Main_Menu(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (SearchPage, SongPage, StartPage):
+        for F in (SearchPage, SongPage, RecommendPage, StartPage):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -93,7 +123,7 @@ class Main_Menu(tk.Tk):
         frame.song_result.delete(0, END)
         # now insert the matched results
         for match in songs:
-            output_text = str(match) + " "
+            output_text = str(match)
             frame.song_result.insert(END, output_text)
         conn.close()
         frame.current_artist = artist.strip()
@@ -106,6 +136,25 @@ class Main_Menu(tk.Tk):
         # print(query)
         url = "https://www.youtube.com/results?search_query=" + query
         webbrowser.open(url)
+
+    def populate_recommendation_page(self, song_ids):
+        frame = self.frames["RecommendPage"]
+        # first, delete the previous recommendations
+        frame.recommend_results.delete(0, END)
+
+        conn = sqlite3.connect('songs_subset.db')
+        cursor = conn.cursor()
+        for id in song_ids:
+            cursor.execute("""SELECT COALESCE(artist_name, '') || ', ' || COALESCE(title, '') as song FROM songs
+                              WHERE "index" = ?""", (id,))
+            song = cursor.fetchone()[0]
+            frame.recommend_results.insert(END, song)
+
+        conn.close()
+        frame.tkraise()
+
+
+
 
 
 
@@ -207,7 +256,7 @@ class SongPage(tk.Frame):
         self.song_result.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.song_result.yview)
         song_select_button = tk.Button(self, text="Find recommendations similar to this song",
-                                         command=lambda: controller.show_frame("StartPage"))
+                                         command=lambda: song_predictor.get_recommendations(self.song_result.selection_get(), self.current_artist))
         song_select_button.place(relx=.7, rely=.75, anchor=CENTER)
 
         youtube_search_button = tk.Button(self, text="Search this song on youtube",
@@ -219,7 +268,32 @@ class SongPage(tk.Frame):
                             command=lambda: controller.show_frame("SearchPage"))
         button1.place(relx=.5, rely=.9, anchor=CENTER)
 
+class RecommendPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        # this holds the current artist whose songs we are viewing
+        self.current_song_id = None
+        self.recommend_results = tk.Listbox(self)
+        self.recommend_results.config(width=75, height=10)
+        self.recommend_results.place(relx=.5, rely=.4, anchor=CENTER)
+        scrollbar = Scrollbar(self)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        label = tk.Label(self, text="Recommendations for this song:", font=controller.title_font)
+        label.pack(side="top", fill="x")
 
+        # attach scroll bar to search results box
+        self.recommend_results.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.recommend_results.yview)
+
+        youtube_search_button = tk.Button(self, text="Listen to this song on youtube",
+                                          command=lambda: controller.search_youtube(self.recommend_results.selection_get()))
+
+        youtube_search_button.place(relx=.5, rely=.75, anchor=CENTER)
+
+        button1 = tk.Button(self, text="return to Artist search",
+                            command=lambda: controller.show_frame("SearchPage"))
+        button1.place(relx=.5, rely=.9, anchor=CENTER)
 
 
 song_predictor = SongPredictor()
