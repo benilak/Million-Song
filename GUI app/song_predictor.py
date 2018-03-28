@@ -5,9 +5,11 @@ from tkinter import *
 import pandas
 import sqlite3
 import webbrowser
+import os
 
-DATA_SET = pandas.read_csv("test_songsFinal.csv")
-ARTIST_NAMES = DATA_SET["artist_name"].iloc()
+# DATA_SET = pandas.read_csv("test_songsFinal.csv")
+# ARTIST_NAMES = DATA_SET["artist_name"].iloc()
+
 
 class SongPredictor():
     """The driver class of the program"""
@@ -101,7 +103,7 @@ class Main_Menu(tk.Tk):
     def search_youtube(self, search):
         search = search.strip()
         query = search.replace(" ", "+")
-        print(query)
+        # print(query)
         url = "https://www.youtube.com/results?search_query=" + query
         webbrowser.open(url)
 

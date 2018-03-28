@@ -7,8 +7,11 @@ from sklearn.cluster import KMeans
 from sklearn import preprocessing
 from sklearn.cluster import AgglomerativeClustering
 from scipy.cluster.hierarchy import dendrogram, linkage
+from scipy.cluster.hierarchy import fcluster
 import matplotlib.pyplot as plt
 import numpy as np
+
+
 
 
 # path = os.path.abspath('C:\\Users\Landon\Desktop\millionsongsubset_full\millionsongsubset_full\MillionSongSubset\data')
@@ -21,7 +24,13 @@ column_names = ['artist_name', 'title', 'release',  'year', 'tempo', 'duration',
                  "artist_hotttnesss", 'time_signature', 'start_of_fade_out']
 data_set = pandas.read_csv("test_songs2.csv")
 artist_names = data_set["artist_name"]
-print(artist_names[:10])
+sql = "SELECT COALESCE(artist_name, '') || ', ' || COALESCE(title, '') as song from songs"
+conn = sqlite3.connect('songs_subset.db')
+cursor = conn.cursor()
+
+data_labels = pandas.read_sql(sql, conn, )
+# print(data_labels)
+conn.close
 data_set = data_set.drop(['artist_name', 'title', 'release', 'year', 'mode'], axis=1)
 
 # print(data_set)
@@ -32,22 +41,31 @@ scaler = preprocessing.StandardScaler().fit(data_array)
 data_array = scaler.transform(data_array)
 # print("after scaling:")
 # print(data_array[:10, ])
-
-cluster = linkage(data_array[:5000, ], 'complete')
+cluster = linkage(data_array[:2000], 'single')
 # calculate full dendrogram
-plt.figure()
-plt.title('Hierarchical Clustering Dendrogram')
-plt.xlabel('sample index')
-plt.ylabel('distance')
-dendrogram(
+# plt.figure()
+# plt.title('Hierarchical Clustering Dendrogram')
+# plt.xlabel('sample index')
+# plt.ylabel('distance')
+clustered_songs = dendrogram(
     cluster,
     orientation="right",
-    p=9,
-    truncate_mode="level",
+    truncate_mode="none",
     leaf_font_size=5.,  # font size for the x axis labels
-    labels=artist_names[:5000].iloc()
+    labels=data_labels[:2000].iloc(),
+    get_leaves=True
 )
-plt.show()
+# plt.show()
+artist_list = list(clustered_songs['ivl'])
+for song in artist_list[0:5]:
+    print(song.name)
+
+# artist_flat_cluster = fcluster(cluster, t=.1)
+# print(artist_flat_cluster[0:5])
+
+
+
+
 
 
 # kmeans = KMeans(n_clusters=12)
